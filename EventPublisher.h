@@ -4,7 +4,6 @@
 #include "IGameEventObserver.h"
 #include <vector>
 #include <algorithm>
-#include <memory>
 
 class EventPublisher {
 private:
@@ -12,12 +11,16 @@ private:
 
 public:
     void subscribe(IGameEventObserver* observer) {
+        if (!observer) return; 
+
         if (std::find(observers.begin(), observers.end(), observer) == observers.end()) {
             observers.push_back(observer);
         }
     }
 
     void unsubscribe(IGameEventObserver* observer) {
+        if (!observer) return; 
+
         auto it = std::find(observers.begin(), observers.end(), observer);
         if (it != observers.end()) {
             observers.erase(it);
@@ -26,7 +29,9 @@ public:
 
     void notifyAll(const GameEvent& event) {
         for (auto observer : observers) {
-            observer->onEventOccurred(event);
+            if (observer) {
+                observer->onEventOccurred(event);
+            }
         }
     }
 
